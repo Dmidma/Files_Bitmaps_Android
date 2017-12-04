@@ -1,0 +1,130 @@
+package com.example.android.filesbitmaps;
+
+import android.content.Context;
+import android.support.v7.app.AppCompatActivity;
+import android.os.Bundle;
+import android.util.Log;
+import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import com.example.android.filesbitmaps.utils.InternalFiles;
+
+import java.io.File;
+import java.io.IOException;
+
+public class InternalActivity extends AppCompatActivity implements View.OnClickListener {
+
+    private static final String TAG = InternalActivity.class.getSimpleName();
+
+    private Context mContext;
+
+    private Button mBtnReadFile;
+    private Button mBtnCreateFile;
+    private Button mBtnDeleteFile;
+    private Button mBtnResetTextViews;
+
+    private EditText mEtFileName;
+    private EditText mEtFileContent;
+
+    private TextView mTvFileName;
+    private TextView mTvFileContent;
+
+    private InternalFiles internalFiles;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_internal);
+
+        mContext = InternalActivity.this;
+
+        internalFiles = new InternalFiles(mContext);
+
+        mBtnCreateFile = (Button) findViewById(R.id.btn_create_file);
+        mBtnReadFile = (Button) findViewById(R.id.btn_read_file);
+        mBtnDeleteFile = (Button) findViewById(R.id.btn_delete_file);
+        mBtnResetTextViews = (Button) findViewById(R.id.btn_reset_tvs);
+        mBtnCreateFile.setOnClickListener(this);
+        mBtnReadFile.setOnClickListener(this);
+        mBtnDeleteFile.setOnClickListener(this);
+        mBtnResetTextViews.setOnClickListener(this);
+
+        mEtFileName = (EditText) findViewById(R.id.et_filname);
+        mEtFileContent = (EditText) findViewById(R.id.et_file_content);
+
+        mTvFileContent = (TextView) findViewById(R.id.tv_file_content);
+        mTvFileName = (TextView) findViewById(R.id.tv_full_path);
+
+    }
+
+
+    @Override
+    public void onClick(View view) {
+        switch (view.getId()) {
+            case R.id.btn_create_file:
+                createFile();
+                return;
+            case R.id.btn_read_file:
+                readFile();
+                return;
+            case R.id.btn_delete_file:
+                deleteFile();
+                return;
+            case R.id.btn_reset_tvs:
+                mTvFileContent.setText("");
+                mTvFileName.setText("");
+                return;
+        }
+    }
+
+    private void createFile() {
+        String fileName = mEtFileName.getText().toString();
+        String fileContent = mEtFileContent.getText().toString();
+
+        File aFile = internalFiles.getFile(fileName, InternalFiles.INTERNAL_CACHE_DIR);
+
+        try {
+            internalFiles.writeToFile(aFile, fileContent, mContext.MODE_APPEND);
+        } catch (IOException e) {
+            e.printStackTrace();
+            Log.d(TAG, "Unable to write to File");
+        }
+
+
+        Toast.makeText(mContext, "Done Creating", Toast.LENGTH_LONG).show();
+    }
+
+
+    private void readFile() {
+        String fileName = mEtFileName.getText().toString();
+        File aFile = internalFiles.getFile(fileName, InternalFiles.INTERNAL_DIR);
+
+
+
+        try {
+            String fileContent = internalFiles.readFromFile(aFile);
+            mTvFileContent.setText(fileContent);
+            mTvFileName.setText(aFile.getName() + "|" + aFile.getAbsolutePath());
+        } catch (IOException e) {
+            e.printStackTrace();
+            Log.d(TAG, "Unable to read from File");
+        }
+
+        Toast.makeText(mContext, "Done Reading", Toast.LENGTH_LONG).show();
+
+    }
+
+    private void deleteFile() {
+        String fileName = mEtFileName.getText().toString();
+        File aFile = internalFiles.getFile(fileName, InternalFiles.INTERNAL_DIR);
+
+        if (internalFiles.deleteFile(aFile)) {
+            Toast.makeText(mContext, "Deleted", Toast.LENGTH_LONG).show();
+        } else {
+            Toast.makeText(mContext, "Not Deleted", Toast.LENGTH_LONG).show();
+        }
+    }
+}
