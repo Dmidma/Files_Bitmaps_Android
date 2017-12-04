@@ -52,14 +52,14 @@ public class InternalFiles {
     /**
      *
      * @param filename
-     * @param filecontent
+     * @param fileContent
      * @param operationMode Can be either Context.MODE_PRIVATE (only accessed by the calling app)
      *                      or Context.MODE_APPEND (append to file)
      * @throws IOException
      */
-    public void writeToInternalFile(String filename, String filecontent, int operationMode) throws IOException {
+    public void writeToInternalFile(String filename, String fileContent, int operationMode) throws IOException {
         FileOutputStream fos = mcontext.openFileOutput(filename, operationMode);
-        fos.write(filecontent.getBytes());
+        fos.write(fileContent.getBytes());
         fos.close();
     }
 
@@ -78,11 +78,15 @@ public class InternalFiles {
         return sb.toString();
     }
 
-
-
     public boolean deleteInternalFile(String filename) {
         return mcontext.deleteFile(filename);
     }
+
+    // get contents of internal directory
+    public String[] getInternalDirContents() {
+        return getInternalDir(INTERNAL_DIR).list();
+    }
+
 
 
     public boolean deleteFile(File file) {

@@ -117,8 +117,7 @@ public class InternalActivity extends AppCompatActivity implements View.OnClickL
 
         // clear dir content
         mTvDirContent.setText("");
-        File internalDir = internalFiles.getInternalDir(InternalFiles.INTERNAL_CACHE_DIR);
-        for (String currContent: internalDir.list()) {
+        for (String currContent: internalFiles.getInternalDirContents()) {
             mTvDirContent.append(currContent + "\n");
         }
 
