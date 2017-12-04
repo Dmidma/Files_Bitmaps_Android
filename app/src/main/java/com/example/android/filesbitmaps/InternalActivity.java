@@ -13,6 +13,7 @@ import android.widget.Toast;
 import com.example.android.filesbitmaps.utils.InternalFiles;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 
 public class InternalActivity extends AppCompatActivity implements View.OnClickListener {
@@ -84,10 +85,8 @@ public class InternalActivity extends AppCompatActivity implements View.OnClickL
         String fileName = mEtFileName.getText().toString();
         String fileContent = mEtFileContent.getText().toString();
 
-        File aFile = internalFiles.getFile(fileName, InternalFiles.INTERNAL_CACHE_DIR);
-
         try {
-            internalFiles.writeToFile(aFile, fileContent, mContext.MODE_APPEND);
+            internalFiles.writeToInternalFile(fileName, fileContent, mContext.MODE_APPEND);
         } catch (IOException e) {
             e.printStackTrace();
             Log.d(TAG, "Unable to write to File");
@@ -100,31 +99,43 @@ public class InternalActivity extends AppCompatActivity implements View.OnClickL
 
     private void readFile() {
         String fileName = mEtFileName.getText().toString();
-        File aFile = internalFiles.getFile(fileName, InternalFiles.INTERNAL_DIR);
-
-
 
         try {
-            String fileContent = internalFiles.readFromFile(aFile);
+            String fileContent = internalFiles.readFromInternalFile(fileName);
             mTvFileContent.setText(fileContent);
-            mTvFileName.setText(aFile.getName() + "|" + aFile.getAbsolutePath());
+            mTvFileName.setText(fileName + "|" + internalFiles.getFile(fileName, InternalFiles.INTERNAL_CACHE_DIR).getAbsolutePath());
+            Toast.makeText(mContext, "Done Reading", Toast.LENGTH_LONG).show();
+        } catch (FileNotFoundException fe) {
+            fe.printStackTrace();
+            Log.d(TAG, "File does not exist");
+            Toast.makeText(mContext, "File Does not exist", Toast.LENGTH_LONG).show();
         } catch (IOException e) {
             e.printStackTrace();
             Log.d(TAG, "Unable to read from File");
+            Toast.makeText(mContext, "Opps an error", Toast.LENGTH_LONG).show();
         }
 
-        Toast.makeText(mContext, "Done Reading", Toast.LENGTH_LONG).show();
+
 
     }
 
     private void deleteFile() {
         String fileName = mEtFileName.getText().toString();
-        File aFile = internalFiles.getFile(fileName, InternalFiles.INTERNAL_DIR);
 
-        if (internalFiles.deleteFile(aFile)) {
+
+
+        if (internalFiles.deleteFile(internalFiles.getFile(fileName, InternalFiles.INTERNAL_DIR))) {
             Toast.makeText(mContext, "Deleted", Toast.LENGTH_LONG).show();
         } else {
             Toast.makeText(mContext, "Not Deleted", Toast.LENGTH_LONG).show();
         }
+
+        /*
+        if (internalFiles.deleteInternalFile(fileName)) {
+            Toast.makeText(mContext, "Deleted", Toast.LENGTH_LONG).show();
+        } else {
+            Toast.makeText(mContext, "Not Deleted", Toast.LENGTH_LONG).show();
+        }
+        */
     }
 }

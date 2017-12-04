@@ -51,21 +51,20 @@ public class InternalFiles {
 
     /**
      *
-     * @param file
-     * @param content
+     * @param filename
+     * @param filecontent
      * @param operationMode Can be either Context.MODE_PRIVATE (only accessed by the calling app)
      *                      or Context.MODE_APPEND (append to file)
      * @throws IOException
      */
-    public void writeToFile(File file, String content, int operationMode) throws IOException {
-        FileOutputStream fos = mcontext.openFileOutput(file.getName(), operationMode);
-        fos.write(content.getBytes());
+    public void writeToInternalFile(String filename, String filecontent, int operationMode) throws IOException {
+        FileOutputStream fos = mcontext.openFileOutput(filename, operationMode);
+        fos.write(filecontent.getBytes());
         fos.close();
     }
 
-
-    public String readFromFile(File file) throws IOException {
-        FileInputStream fis = mcontext.openFileInput(file.getName());
+    public String readFromInternalFile(String filename) throws IOException {
+        FileInputStream fis = mcontext.openFileInput(filename);
         InputStreamReader isr = new InputStreamReader(fis);
         BufferedReader br = new BufferedReader(isr);
         StringBuilder sb = new StringBuilder();
@@ -79,12 +78,15 @@ public class InternalFiles {
         return sb.toString();
     }
 
-    public boolean deleteFile(File file) {
-        return file.delete();
+
+
+    public boolean deleteInternalFile(String filename) {
+        return mcontext.deleteFile(filename);
     }
 
 
-
-
+    public boolean deleteFile(File file) {
+        return file.delete();
+    }
 
 }
