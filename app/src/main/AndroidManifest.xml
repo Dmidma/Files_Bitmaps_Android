@@ -18,12 +18,21 @@
         </activity>
         <activity
             android:name=".InternalActivity"
+            android:label="Internal Dir"
             android:parentActivityName=".MainActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".MainActivity" />
         </activity>
-        <activity android:name=".TempFileActivity"
+        <activity
+            android:name=".TempFileActivity"
+            android:parentActivityName=".MainActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".MainActivity" />
+        </activity>
+        <activity android:name=".InternalCacheActivity"
+            android:label="Internal Cache Dir"
             android:parentActivityName=".MainActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"

@@ -63,7 +63,7 @@ public class TempFileActivity extends AppCompatActivity implements View.OnClickL
 
 
         try {
-            File tempFile = File.createTempFile(prefix, suffix, internalFiles.getInternalDir(InternalFiles.INTERNAL_DIR));
+            File tempFile = internalFiles.getUniqueNameFile(prefix, suffix, InternalFiles.INTERNAL_DIR);
 
 
 

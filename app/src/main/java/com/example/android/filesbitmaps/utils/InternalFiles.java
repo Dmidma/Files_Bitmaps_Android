@@ -87,10 +87,46 @@ public class InternalFiles {
         return getInternalDir(INTERNAL_DIR).list();
     }
 
+    public String[] getInternalCacheDirContents() {
+        return getInternalDir(INTERNAL_CACHE_DIR).list();
+    }
 
+    public File getUniqueNameFile(String prefix, String suffix, int dirType) throws IOException {
+        return File.createTempFile(prefix, suffix, getInternalDir(dirType));
+
+    }
 
     public boolean deleteFile(File file) {
         return file.delete();
     }
+
+
+
+
+    public void writeToFile(File file, String fileContent) throws IOException {
+        FileOutputStream fos = new FileOutputStream(file);
+        fos.write(fileContent.getBytes());
+        fos.close();
+    }
+
+    public String readFromFile(File file) throws IOException {
+        FileInputStream fis = new FileInputStream(file);
+        InputStreamReader isr = new InputStreamReader(fis);
+        BufferedReader br = new BufferedReader(isr);
+        StringBuilder sb = new StringBuilder();
+        String line;
+        while ((line = br.readLine()) != null) {
+            sb.append(line);
+        }
+        br.close();
+        isr.close();
+        fis.close();
+        return sb.toString();
+    }
+
+
+
+
+
 
 }

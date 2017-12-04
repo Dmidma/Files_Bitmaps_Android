@@ -12,7 +12,6 @@ import android.widget.Toast;
 
 import com.example.android.filesbitmaps.utils.InternalFiles;
 
-import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 
