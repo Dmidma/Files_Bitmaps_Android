@@ -25,13 +25,13 @@ public class InternalActivity extends AppCompatActivity implements View.OnClickL
     private Button mBtnReadFile;
     private Button mBtnCreateFile;
     private Button mBtnDeleteFile;
-    private Button mBtnResetTextViews;
 
     private EditText mEtFileName;
     private EditText mEtFileContent;
 
     private TextView mTvFileName;
     private TextView mTvFileContent;
+    private TextView mTvDirContent;
 
     private InternalFiles internalFiles;
 
@@ -47,17 +47,17 @@ public class InternalActivity extends AppCompatActivity implements View.OnClickL
         mBtnCreateFile = (Button) findViewById(R.id.btn_create_file);
         mBtnReadFile = (Button) findViewById(R.id.btn_read_file);
         mBtnDeleteFile = (Button) findViewById(R.id.btn_delete_file);
-        mBtnResetTextViews = (Button) findViewById(R.id.btn_reset_tvs);
+
         mBtnCreateFile.setOnClickListener(this);
         mBtnReadFile.setOnClickListener(this);
         mBtnDeleteFile.setOnClickListener(this);
-        mBtnResetTextViews.setOnClickListener(this);
 
         mEtFileName = (EditText) findViewById(R.id.et_filname);
         mEtFileContent = (EditText) findViewById(R.id.et_file_content);
 
         mTvFileContent = (TextView) findViewById(R.id.tv_file_content);
         mTvFileName = (TextView) findViewById(R.id.tv_full_path);
+        mTvDirContent = (TextView) findViewById(R.id.tv_dir_content);
 
     }
 
@@ -73,10 +73,6 @@ public class InternalActivity extends AppCompatActivity implements View.OnClickL
                 return;
             case R.id.btn_delete_file:
                 deleteFile();
-                return;
-            case R.id.btn_reset_tvs:
-                mTvFileContent.setText("");
-                mTvFileName.setText("");
                 return;
         }
     }
@@ -98,12 +94,15 @@ public class InternalActivity extends AppCompatActivity implements View.OnClickL
 
 
     private void readFile() {
+        mTvFileContent.setText("");
+        mTvFileName.setText("");
+
         String fileName = mEtFileName.getText().toString();
 
         try {
             String fileContent = internalFiles.readFromInternalFile(fileName);
             mTvFileContent.setText(fileContent);
-            mTvFileName.setText(fileName + "|" + internalFiles.getFile(fileName, InternalFiles.INTERNAL_CACHE_DIR).getAbsolutePath());
+            mTvFileName.setText(fileName + "|" + internalFiles.getFile(fileName, InternalFiles.INTERNAL_DIR).getAbsolutePath());
             Toast.makeText(mContext, "Done Reading", Toast.LENGTH_LONG).show();
         } catch (FileNotFoundException fe) {
             fe.printStackTrace();
@@ -116,12 +115,18 @@ public class InternalActivity extends AppCompatActivity implements View.OnClickL
         }
 
 
+        // clear dir content
+        mTvDirContent.setText("");
+        File internalDir = internalFiles.getInternalDir(InternalFiles.INTERNAL_CACHE_DIR);
+        for (String currContent: internalDir.list()) {
+            mTvDirContent.append(currContent + "\n");
+        }
+
 
     }
 
     private void deleteFile() {
         String fileName = mEtFileName.getText().toString();
-
 
 
         if (internalFiles.deleteFile(internalFiles.getFile(fileName, InternalFiles.INTERNAL_DIR))) {
