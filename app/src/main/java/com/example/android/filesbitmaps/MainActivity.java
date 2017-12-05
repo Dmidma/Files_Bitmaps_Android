@@ -12,6 +12,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private Button mBtnGoInternal;
     private Button mBtnGoTempFile;
     private Button mBtnGoCacheInternal;
+    private Button mBtnGoExternal;
 
     private Context mContext;
 
@@ -26,10 +27,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         mBtnGoInternal = (Button) findViewById(R.id.btn_go_internal);
         mBtnGoTempFile = (Button) findViewById(R.id.btn_go_temp_file);
         mBtnGoCacheInternal = (Button) findViewById(R.id.btn_go_cache_internal);
+        mBtnGoExternal = (Button) findViewById(R.id.btn_go_external);
+
 
         mBtnGoInternal.setOnClickListener(this);
         mBtnGoTempFile.setOnClickListener(this);
         mBtnGoCacheInternal.setOnClickListener(this);
+        mBtnGoExternal.setOnClickListener(this);
 
     }
 
@@ -45,6 +49,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 return;
             case R.id.btn_go_cache_internal:
                 startActivity(new Intent(mContext, InternalCacheActivity.class));
+                return;
+            case R.id.btn_go_external:
+                startActivity(new Intent(mContext, ExternalActivity.class));
                 return;
         }
     }
