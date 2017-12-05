@@ -1,7 +1,9 @@
 package com.example.android.filesbitmaps;
 
 import android.content.Context;
+import android.content.pm.PackageManager;
 import android.os.Environment;
+import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -57,8 +59,23 @@ public class ExternalActivity extends AppCompatActivity implements View.OnClickL
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.btn_create_external:
-                createFile();
+                if (ExternalFiles.checkPermission(this))
+                    createFile();
                 return;
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        switch (requestCode) {
+            case ExternalFiles.PERMISSION_REQUEST_CODE:
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    createFile();
+                }
+                else {
+                    Toast.makeText(mContext, "Unable to create the File", Toast.LENGTH_LONG).show();
+                }
+                break;
         }
     }
 
@@ -72,28 +89,19 @@ public class ExternalActivity extends AppCompatActivity implements View.OnClickL
         String fileName = mEtFileName.getText().toString();
         String fileContent = mEtFileContent.getText().toString();
 
-        File storageDir = new File(
-                Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES)
-                + File.separator + "Something");
-
-        boolean success = true;
-        if (!storageDir.exists()) {
-            success = storageDir.mkdirs();
-        }
+        File storageDir = externalFiles.getPublicDir(ExternalFiles.EXTERNAL_PUBLIC_DIR, Environment.DIRECTORY_DOCUMENTS, "External Files");
 
         // mkdirs creates the directory name and nonexistent parent dirs
-        if(!success) {
-            Toast.makeText(mContext, "Unable to create dir", Toast.LENGTH_LONG).show();
+        if(storageDir == null) {
+            Toast.makeText(mContext, "Unable to create sub dir", Toast.LENGTH_LONG).show();
+            return;
         }
 
-        File theFile = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES), fileName);
+        File theFile = externalFiles.getFile(fileName, storageDir);
         String fullPath = theFile.getAbsolutePath();
 
         try {
-            OutputStream fOut = new FileOutputStream(theFile);
-            fOut.write(fileContent.getBytes());
-            fOut.close();
-
+            externalFiles.writeToFile(theFile, fileContent);
             Toast.makeText(mContext, "Done Writing", Toast.LENGTH_LONG).show();
         } catch (IOException e) {
             e.printStackTrace();
@@ -112,7 +120,7 @@ public class ExternalActivity extends AppCompatActivity implements View.OnClickL
 
 
         // set file full path
-        mTvFullPath.setText(theFile.getAbsolutePath());
+        mTvFullPath.setText(fullPath);
 
 
         // set dir contents
@@ -126,8 +134,5 @@ public class ExternalActivity extends AppCompatActivity implements View.OnClickL
                 mTvDirContent.append(currContent + "\n");
             }
         }
-
-
     }
-
 }

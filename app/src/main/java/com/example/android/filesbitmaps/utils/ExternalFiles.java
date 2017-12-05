@@ -14,6 +14,9 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
 
 /**
  * Created by dmidma on 12/5/17.
@@ -76,10 +79,26 @@ public class ExternalFiles {
         return false;
     }
 
+    /**
+     * In the onRequestPermissionsResult of the activity you are using this class.
+     *
+     * switch(requestCode) {
+     *     case ExternalFiles.PERMISSION_REQUEST_CODE:
+     *      if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED){
+     *          // call to something
+     *      }
+     *      break;
+     *
+     * }
+     */
+
+
 
     public File getExternalDir(int dirType, String whichDir) throws IllegalArgumentException {
         switch (dirType) {
             case EXTERNAL_PRIVATE_DIR:
+                if ("".equals(whichDir) || whichDir.equals(null))
+                    throw new IllegalArgumentException("Must specify Dir Type using Environment.xxx");
                 return mContext.getExternalFilesDir(whichDir);
             case EXTERNAL_PRIVATE_CACHE_DIR:
                 return mContext.getExternalCacheDir();
@@ -94,9 +113,39 @@ public class ExternalFiles {
         }
     }
 
+    // This function will return the sub dir in the public dir.
+    // return null when this does not succeed
+    public File getPublicDir(int dirType, String whichDir, String subDir)  {
+
+        if (dirType != EXTERNAL_PUBLIC_DIR && dirType != EXTERNAL_GENERAL_PUBLIC) {
+            return null;
+        }
+
+        if ("".equals(subDir) || subDir == null) {
+            return null;
+        }
+
+        File storageDir = new File(getExternalDir(dirType, whichDir) + File.separator + subDir);
+
+        boolean success = true;
+        if (!storageDir.exists()) {
+            // mkdirs will create any nonexistent parent dir
+            success = storageDir.mkdirs();
+        }
+        if (!success) {
+            return null;
+        }
+
+        return storageDir;
+    }
+
 
     public File getFile(String fileName, int dirType, String whichDir) {
         return new File(getExternalDir(dirType, whichDir), fileName);
+    }
+
+    public File getFile(String fileName, File storageDir) {
+        return new File(storageDir, fileName);
     }
 
     public String[] getDirContent(File file) {
@@ -128,15 +177,33 @@ public class ExternalFiles {
         return sb.toString();
     }
 
-
-    public static void checkPermission(Activity activity) {
+    // return false if the permission is not given
+    // return true if the permission was already given
+    public static boolean checkPermission(Activity activity) {
         if (ContextCompat.checkSelfPermission(activity,
                 Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(activity,
                     new String[] {Manifest.permission.WRITE_EXTERNAL_STORAGE},
                     PERMISSION_REQUEST_CODE);
+            return false;
         }
+        return true;
     }
+
+
+
+    public File getUniqueNameFile(String prefix, String suffix, File storageDir) throws IOException {
+        return File.createTempFile(prefix, suffix, storageDir);
+
+    }
+
+
+    public static String getTimeStamp() {
+        return new SimpleDateFormat("yyyyMMdd_HHmmss",
+                Locale.getDefault()).format(new Date());
+    }
+
+
 
 
 }

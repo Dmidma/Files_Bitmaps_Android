@@ -99,6 +99,7 @@ public class InternalFiles {
 
     }
 
+
     public boolean deleteFile(File file) {
         return file.delete();
     }
