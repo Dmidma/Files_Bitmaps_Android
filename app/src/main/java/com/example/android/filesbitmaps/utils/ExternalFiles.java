@@ -20,16 +20,18 @@ public class ExternalFiles {
      * You are a big person, you know which one is needed in your case.
      *
      * Keep in mind that you can create two types of file in external storage:
-     *  - private
-     *  - public
+     *  - private: Available to other apps (Must only have value to your app). Deleted
+     *  when the app is uninstalled.
+     *  - public: Available to other apps (Public usage). Won't be deleted when the app
+     *  is uninstalled.
      */
 
-
+    // no need for whichDir for the following 2
     public static final int EXTERNAL_PRIVATE_DIR = 1;
     public static final int EXTERNAL_PRIVATE_CACHE_DIR = 2;
 
     public static final int EXTERNAL_PUBLIC_DIR = 3;
-    public static final int EXTERNAL_PUBLIC_CACHE_DIR = 4;
+    public static final int EXTERNAL_GENERAL_PUBLIC = 4;
 
 
 
@@ -64,26 +66,33 @@ public class ExternalFiles {
     }
 
 
-    public File getExternalDir(int dirType) {
+    public File getExternalDir(int dirType, String whichDir) throws IllegalArgumentException {
         switch (dirType) {
             case EXTERNAL_PRIVATE_DIR:
-                return null;
+                return mContext.getExternalFilesDir(whichDir);
             case EXTERNAL_PRIVATE_CACHE_DIR:
-                return null;
+                return mContext.getExternalCacheDir();
             case EXTERNAL_PUBLIC_DIR:
-                return null;
-            case EXTERNAL_PUBLIC_CACHE_DIR:
-                return null;
+                if ("".equals(whichDir) || whichDir.equals(null))
+                    throw new IllegalArgumentException("Must specify Dir Type using Environment.xxx");
+                return Environment.getExternalStoragePublicDirectory(whichDir);
+            case EXTERNAL_PUBLIC_MYSTERY:
+                return Environment.getExternalStorageDirectory();
             default:
                 throw new IllegalArgumentException("Must use defined types of class");
         }
     }
 
 
-    public void testFunction() {
-
+    public File getFile(String fileName, int dirType, String whichDir) {
+        return new File(getExternalDir(dirType, whichDir), fileName);
     }
 
-
+    public String[] getDirContent(File file) {
+        if (file.isDirectory()) {
+            return file.list();
+        }
+        return null;
+    }
 
 }
