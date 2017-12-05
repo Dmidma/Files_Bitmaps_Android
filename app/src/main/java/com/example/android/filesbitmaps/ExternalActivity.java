@@ -73,8 +73,8 @@ public class ExternalActivity extends AppCompatActivity implements View.OnClickL
         String fileContent = mEtFileContent.getText().toString();
 
         File storageDir = new File(
-                Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS)
-                + "/lovely");
+                Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES)
+                + File.separator + "Something");
 
         boolean success = true;
         if (!storageDir.exists()) {
@@ -86,7 +86,7 @@ public class ExternalActivity extends AppCompatActivity implements View.OnClickL
             Toast.makeText(mContext, "Unable to create dir", Toast.LENGTH_LONG).show();
         }
 
-        File theFile = new File(storageDir, fileName);
+        File theFile = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES), fileName);
         String fullPath = theFile.getAbsolutePath();
 
         try {

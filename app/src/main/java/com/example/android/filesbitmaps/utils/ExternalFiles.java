@@ -1,7 +1,12 @@
 package com.example.android.filesbitmaps.utils;
 
+import android.Manifest;
+import android.app.Activity;
 import android.content.Context;
+import android.content.pm.PackageManager;
 import android.os.Environment;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -38,6 +43,7 @@ public class ExternalFiles {
     public static final int EXTERNAL_PUBLIC_DIR = 3;
     public static final int EXTERNAL_GENERAL_PUBLIC = 4;
 
+    public static final int PERMISSION_REQUEST_CODE = 1234;
 
 
     private Context mContext;
@@ -121,5 +127,16 @@ public class ExternalFiles {
         fis.close();
         return sb.toString();
     }
+
+
+    public static void checkPermission(Activity activity) {
+        if (ContextCompat.checkSelfPermission(activity,
+                Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(activity,
+                    new String[] {Manifest.permission.WRITE_EXTERNAL_STORAGE},
+                    PERMISSION_REQUEST_CODE);
+        }
+    }
+
 
 }
