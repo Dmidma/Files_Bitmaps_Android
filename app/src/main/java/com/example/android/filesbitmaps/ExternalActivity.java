@@ -13,7 +13,9 @@ import android.widget.Toast;
 import com.example.android.filesbitmaps.utils.ExternalFiles;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 
 public class ExternalActivity extends AppCompatActivity implements View.OnClickListener {
 
@@ -70,11 +72,28 @@ public class ExternalActivity extends AppCompatActivity implements View.OnClickL
         String fileName = mEtFileName.getText().toString();
         String fileContent = mEtFileContent.getText().toString();
 
-        File dir = externalFiles.getExternalDir(ExternalFiles.EXTERNAL_PUBLIC_DIR, Environment.DIRECTORY_DOCUMENTS);
-        File file = externalFiles.getFile(fileName, ExternalFiles.EXTERNAL_PUBLIC_DIR, Environment.DIRECTORY_DOCUMENTS);
+        File storageDir = new File(
+                Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS)
+                + "/lovely");
+
+        boolean success = true;
+        if (!storageDir.exists()) {
+            success = storageDir.mkdirs();
+        }
+
+        // mkdirs creates the directory name and nonexistent parent dirs
+        if(!success) {
+            Toast.makeText(mContext, "Unable to create dir", Toast.LENGTH_LONG).show();
+        }
+
+        File theFile = new File(storageDir, fileName);
+        String fullPath = theFile.getAbsolutePath();
 
         try {
-            externalFiles.writeToFile(file, fileContent);
+            OutputStream fOut = new FileOutputStream(theFile);
+            fOut.write(fileContent.getBytes());
+            fOut.close();
+
             Toast.makeText(mContext, "Done Writing", Toast.LENGTH_LONG).show();
         } catch (IOException e) {
             e.printStackTrace();
@@ -83,7 +102,7 @@ public class ExternalActivity extends AppCompatActivity implements View.OnClickL
 
         // read file
         try {
-            String content = externalFiles.readFromFile(file);
+            String content = externalFiles.readFromFile(theFile);
             mTvFileContent.setText(content);
             Toast.makeText(mContext, "Done Reading", Toast.LENGTH_LONG).show();
         } catch (IOException e) {
@@ -93,17 +112,17 @@ public class ExternalActivity extends AppCompatActivity implements View.OnClickL
 
 
         // set file full path
-        mTvFullPath.setText(file.getAbsolutePath());
+        mTvFullPath.setText(theFile.getAbsolutePath());
 
 
         // set dir contents
         mTvDirContent.setText("");
-        String[] dirContent = externalFiles.getDirContent(dir);
+        String[] dirContent = externalFiles.getDirContent(storageDir);
         if (dirContent == null) {
             Toast.makeText(mContext, "No content", Toast.LENGTH_LONG).show();
         } else {
             Toast.makeText(mContext, "Length: " + dirContent.length, Toast.LENGTH_LONG).show();
-            for (String currContent: externalFiles.getDirContent(dir)) {
+            for (String currContent: externalFiles.getDirContent(storageDir)) {
                 mTvDirContent.append(currContent + "\n");
             }
         }
