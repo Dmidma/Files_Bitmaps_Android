@@ -13,6 +13,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private Button mBtnGoTempFile;
     private Button mBtnGoCacheInternal;
     private Button mBtnGoExternal;
+    private Button mBtnGoBitmap;
 
     private Context mContext;
 
@@ -28,12 +29,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         mBtnGoTempFile = (Button) findViewById(R.id.btn_go_temp_file);
         mBtnGoCacheInternal = (Button) findViewById(R.id.btn_go_cache_internal);
         mBtnGoExternal = (Button) findViewById(R.id.btn_go_external);
-
+        mBtnGoBitmap = (Button) findViewById(R.id.btn_go_bitmap);
 
         mBtnGoInternal.setOnClickListener(this);
         mBtnGoTempFile.setOnClickListener(this);
         mBtnGoCacheInternal.setOnClickListener(this);
         mBtnGoExternal.setOnClickListener(this);
+        mBtnGoBitmap.setOnClickListener(this);
 
     }
 
@@ -43,16 +45,19 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         switch (view.getId()) {
             case R.id.btn_go_internal:
                 startActivity(new Intent(mContext, InternalActivity.class));
-                return;
+                break;
             case R.id.btn_go_temp_file:
                 startActivity(new Intent(mContext, TempFileActivity.class));
-                return;
+                break;
             case R.id.btn_go_cache_internal:
                 startActivity(new Intent(mContext, InternalCacheActivity.class));
-                return;
+                break;
             case R.id.btn_go_external:
                 startActivity(new Intent(mContext, ExternalActivity.class));
-                return;
+                break;
+            case R.id.btn_go_bitmap:
+                startActivity(new Intent(mContext, BitmapActivity.class));
+                break;
         }
     }
 }
