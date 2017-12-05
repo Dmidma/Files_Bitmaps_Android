@@ -3,7 +3,12 @@ package com.example.android.filesbitmaps.utils;
 import android.content.Context;
 import android.os.Environment;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
 
 /**
  * Created by dmidma on 12/5/17.
@@ -76,7 +81,7 @@ public class ExternalFiles {
                 if ("".equals(whichDir) || whichDir.equals(null))
                     throw new IllegalArgumentException("Must specify Dir Type using Environment.xxx");
                 return Environment.getExternalStoragePublicDirectory(whichDir);
-            case EXTERNAL_PUBLIC_MYSTERY:
+            case EXTERNAL_GENERAL_PUBLIC:
                 return Environment.getExternalStorageDirectory();
             default:
                 throw new IllegalArgumentException("Must use defined types of class");
@@ -93,6 +98,28 @@ public class ExternalFiles {
             return file.list();
         }
         return null;
+    }
+
+
+    public void writeToFile(File file, String fileContent) throws IOException {
+        FileOutputStream fos = new FileOutputStream(file);
+        fos.write(fileContent.getBytes());
+        fos.close();
+    }
+
+    public String readFromFile(File file) throws IOException {
+        FileInputStream fis = new FileInputStream(file);
+        InputStreamReader isr = new InputStreamReader(fis);
+        BufferedReader br = new BufferedReader(isr);
+        StringBuilder sb = new StringBuilder();
+        String line;
+        while ((line = br.readLine()) != null) {
+            sb.append(line + "\n");
+        }
+        br.close();
+        isr.close();
+        fis.close();
+        return sb.toString();
     }
 
 }

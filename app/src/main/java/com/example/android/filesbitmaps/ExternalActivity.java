@@ -13,6 +13,7 @@ import android.widget.Toast;
 import com.example.android.filesbitmaps.utils.ExternalFiles;
 
 import java.io.File;
+import java.io.IOException;
 
 public class ExternalActivity extends AppCompatActivity implements View.OnClickListener {
 
@@ -21,9 +22,11 @@ public class ExternalActivity extends AppCompatActivity implements View.OnClickL
     private Button mBtnCreateExternal;
 
     private EditText mEtFileName;
+    private EditText mEtFileContent;
 
     private TextView mTvFullPath;
     private TextView mTvDirContent;
+    private TextView mTvFileContent;
 
     private ExternalFiles externalFiles;
 
@@ -40,9 +43,11 @@ public class ExternalActivity extends AppCompatActivity implements View.OnClickL
         mBtnCreateExternal.setOnClickListener(this);
 
         mEtFileName = (EditText) findViewById(R.id.et_external_file_name);
+        mEtFileContent = (EditText) findViewById(R.id.et_external_file_content);
 
         mTvFullPath = (TextView) findViewById(R.id.tv_external_full_path);
         mTvDirContent = (TextView) findViewById(R.id.tv_external_dir_content);
+        mTvFileContent = (TextView) findViewById(R.id.tv_external_file_content);
 
     }
 
@@ -62,15 +67,42 @@ public class ExternalActivity extends AppCompatActivity implements View.OnClickL
             return;
         }
 
-        File dir = externalFiles.getExternalDir(ExternalFiles.EXTERNAL_PRIVATE_DIR, null);
+        String fileName = mEtFileName.getText().toString();
+        String fileContent = mEtFileContent.getText().toString();
 
-        mTvFullPath.setText(dir.getAbsolutePath());
+        File dir = externalFiles.getExternalDir(ExternalFiles.EXTERNAL_PUBLIC_DIR, Environment.DIRECTORY_DOCUMENTS);
+        File file = externalFiles.getFile(fileName, ExternalFiles.EXTERNAL_PUBLIC_DIR, Environment.DIRECTORY_DOCUMENTS);
 
+        try {
+            externalFiles.writeToFile(file, fileContent);
+            Toast.makeText(mContext, "Done Writing", Toast.LENGTH_LONG).show();
+        } catch (IOException e) {
+            e.printStackTrace();
+            Toast.makeText(mContext, "Unable to write to file", Toast.LENGTH_LONG).show();
+        }
+
+        // read file
+        try {
+            String content = externalFiles.readFromFile(file);
+            mTvFileContent.setText(content);
+            Toast.makeText(mContext, "Done Reading", Toast.LENGTH_LONG).show();
+        } catch (IOException e) {
+            e.printStackTrace();
+            Toast.makeText(mContext, "Unable to read From File", Toast.LENGTH_LONG).show();
+        }
+
+
+        // set file full path
+        mTvFullPath.setText(file.getAbsolutePath());
+
+
+        // set dir contents
         mTvDirContent.setText("");
         String[] dirContent = externalFiles.getDirContent(dir);
         if (dirContent == null) {
             Toast.makeText(mContext, "No content", Toast.LENGTH_LONG).show();
         } else {
+            Toast.makeText(mContext, "Length: " + dirContent.length, Toast.LENGTH_LONG).show();
             for (String currContent: externalFiles.getDirContent(dir)) {
                 mTvDirContent.append(currContent + "\n");
             }
