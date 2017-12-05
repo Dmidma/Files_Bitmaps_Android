@@ -27,12 +27,15 @@ public class InternalCacheActivity extends AppCompatActivity implements View.OnC
 
     private EditText mEtFileName;
     private EditText mEtFileContent;
+    private EditText mEtFileSuffix;
 
     private TextView mTvFileName;
     private TextView mTvFileContent;
     private TextView mTvDirContent;
 
     private InternalFiles internalFiles;
+
+    private File mFile;
 
 
 
@@ -56,6 +59,7 @@ public class InternalCacheActivity extends AppCompatActivity implements View.OnC
 
         mEtFileName = (EditText) findViewById(R.id.et_filname_cache);
         mEtFileContent = (EditText) findViewById(R.id.et_file_content_cache);
+        mEtFileSuffix = (EditText) findViewById(R.id.et_suffix_cache);
 
         mTvFileContent = (TextView) findViewById(R.id.tv_file_content_cache);
         mTvFileName = (TextView) findViewById(R.id.tv_full_path_cache);
@@ -81,12 +85,13 @@ public class InternalCacheActivity extends AppCompatActivity implements View.OnC
 
     private void createFile() {
         String fileName = mEtFileName.getText().toString();
+        String suffix = mEtFileSuffix.getText().toString();
         String fileContent = mEtFileContent.getText().toString();
 
-        File aFile = internalFiles.getFile(fileName, InternalFiles.INTERNAL_CACHE_DIR);
 
         try {
-            internalFiles.writeToFile(aFile, fileContent);
+            mFile = internalFiles.getUniqueNameFile(fileName, suffix, InternalFiles.INTERNAL_CACHE_DIR);
+            internalFiles.writeToFile(mFile, fileContent);
             Toast.makeText(mContext, "Done Creating", Toast.LENGTH_LONG).show();
         } catch (IOException e) {
             e.printStackTrace();
@@ -119,7 +124,10 @@ public class InternalCacheActivity extends AppCompatActivity implements View.OnC
     }
 
     private void deleteFile() {
-
+        if (internalFiles.deleteFile(mFile))
+            Toast.makeText(mContext, "Deleted", Toast.LENGTH_LONG).show();
+        else
+            Toast.makeText(mContext, "Not deleted", Toast.LENGTH_LONG).show();
     }
 
 

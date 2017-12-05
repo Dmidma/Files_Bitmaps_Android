@@ -18,7 +18,7 @@ public class InternalFiles {
 
 
 
-    private Context mcontext;
+    private Context mContext;
 
 
     // Internal dir
@@ -28,7 +28,7 @@ public class InternalFiles {
 
 
     public InternalFiles(Context context) {
-        mcontext = context;
+        mContext = context;
     }
 
 
@@ -36,9 +36,9 @@ public class InternalFiles {
     public File getInternalDir(int dirType) {
         switch (dirType) {
             case INTERNAL_DIR:
-                return mcontext.getFilesDir();
+                return mContext.getFilesDir();
             case INTERNAL_CACHE_DIR:
-                return mcontext.getCacheDir();
+                return mContext.getCacheDir();
             default:
                 throw new IllegalArgumentException("Must use defined types of class");
         }
@@ -58,13 +58,13 @@ public class InternalFiles {
      * @throws IOException
      */
     public void writeToInternalFile(String filename, String fileContent, int operationMode) throws IOException {
-        FileOutputStream fos = mcontext.openFileOutput(filename, operationMode);
+        FileOutputStream fos = mContext.openFileOutput(filename, operationMode);
         fos.write(fileContent.getBytes());
         fos.close();
     }
 
     public String readFromInternalFile(String filename) throws IOException {
-        FileInputStream fis = mcontext.openFileInput(filename);
+        FileInputStream fis = mContext.openFileInput(filename);
         InputStreamReader isr = new InputStreamReader(fis);
         BufferedReader br = new BufferedReader(isr);
         StringBuilder sb = new StringBuilder();
@@ -79,7 +79,7 @@ public class InternalFiles {
     }
 
     public boolean deleteInternalFile(String filename) {
-        return mcontext.deleteFile(filename);
+        return mContext.deleteFile(filename);
     }
 
     // get contents of internal directory
@@ -116,7 +116,7 @@ public class InternalFiles {
         StringBuilder sb = new StringBuilder();
         String line;
         while ((line = br.readLine()) != null) {
-            sb.append(line);
+            sb.append(line + "\n");
         }
         br.close();
         isr.close();
